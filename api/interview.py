@@ -4,7 +4,7 @@ import uuid
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 
-from api.security import require_api_key
+from api.security import enforce_rate_limit, require_api_key
 from db import async_session_factory
 from models.candidate import CandidateProfile
 from models.job import JobRequirements
@@ -23,7 +23,7 @@ class InterviewQuestionsResponse(BaseModel):
     questions: list[str]
 
 
-@router.post("/generate", response_model=InterviewQuestionsResponse)
+@router.post("/generate", response_model=InterviewQuestionsResponse, dependencies=[Depends(enforce_rate_limit)])
 async def generate_interview_questions(candidate_id: uuid.UUID, job_id: uuid.UUID) -> InterviewQuestionsResponse:
     """Generate and persist interview questions for a candidate-job pair."""
     async with async_session_factory() as session:
