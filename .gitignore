@@ -147,6 +147,16 @@ activemq-data/
 # SageMath parsed files
 *.sage.py
 
+# Application logs
+logs/*.log
+!logs/.gitkeep
+
+# Uploaded resume files
+data/uploads/
+
+# Generated resume renders
+data/rendered/
+
 # Environments
 .env
 .envrc
@@ -216,3 +226,6 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# CodeGraph local index
+.codegraph/
