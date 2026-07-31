@@ -28,11 +28,8 @@ services:
       - path: .env
         required: false
     environment:
-      # Overrides whatever POSTGRES_DSN is in .env (that value is for host-side
-      # access, e.g. localhost:5434) so the API always reaches Postgres via the
-      # compose network regardless of local-dev settings.
       POSTGRES_DSN: postgresql+asyncpg://${POSTGRES_USER:-hr_cv_matcher}:${POSTGRES_PASSWORD:-hr_cv_matcher}@postgres:5432/${POSTGRES_DB:-hr_cv_matcher}
-    command: sh -c "alembic upgrade head && uvicorn main:app --host 0.0.0.0 --port 8000"
+    command: sh -c "alembic upgrade head && uvicorn main:app --host 0.0.0.0 --port 8000 --proxy-headers --forwarded-allow-ips='${FORWARDED_ALLOW_IPS:-127.0.0.1}'"
     healthcheck:
       test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/health')\""]
       interval: 10s
@@ -51,8 +48,6 @@ services:
       - path: .env
         required: false
     environment:
-      # Container-network hostname for the api service, overriding any
-      # localhost-based API_BASE_URL meant for local (non-Docker) dev use.
       API_BASE_URL: http://api:8000
     command: streamlit run app/streamlit.py --server.port 8501 --server.address 0.0.0.0
 

@@ -1,6 +1,7 @@
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from sentence_transformers import SentenceTransformer
 
 from api.candidates import router as candidates_router
@@ -22,6 +23,11 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="HR CV Matcher", lifespan=lifespan)
+
+_cors_origins = [origin.strip() for origin in settings.cors_allowed_origins.split(",") if origin.strip()]
+if _cors_origins:
+    app.add_middleware(CORSMiddleware, allow_origins=_cors_origins, allow_methods=["*"], allow_headers=["*"])
+
 app.include_router(candidates_router)
 app.include_router(interview_router)
 app.include_router(jobs_router)

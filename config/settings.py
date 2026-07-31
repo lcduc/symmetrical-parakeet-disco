@@ -10,10 +10,7 @@ class Settings(BaseSettings):
     postgres_dsn: str
     llm_provider: str = "openai"
     llm_api_key: str
-    llm_model: str | None = None  # overrides the provider's default model (e.g. "gpt-4.1", "claude-opus-4-6")
-    # Overrides llm_model for resume extraction specifically (same llm_provider) — the one
-    # LLM-driven task most worth pinning to a stronger model. Falls back to llm_model, then
-    # the provider's own default, when unset.
+    llm_model: str | None = None
     extraction_llm_model: str | None = None
     embedding_model_name: str
     vlm_device: str
@@ -22,15 +19,13 @@ class Settings(BaseSettings):
 
     ocr_vlm_backend: str = "paddle_vlm"  # one of: paddle_vlm, datalab, qwen2_vl
     datalab_api_key: str | None = None
-    # auto = native text layer -> local fast OCR -> escalate to ocr_vlm_backend on low quality (default).
-    # cloud_only = skip native text/local OCR entirely; always route straight through ocr_vlm_backend
-    # (pair with OCR_VLM_BACKEND=datalab for a fully cloud-based, no-local-model deployment).
     ocr_mode: Literal["auto", "cloud_only"] = "auto"
     ocr_quality_threshold: float = 0.85  # min fast-OCR quality_score (0-1) before escalating to the VLM tier
 
     company_name: str = ""  # watermarked onto rendered resume templates when set
 
-    api_key: str = ""  # shared secret gating every API route except /health; empty disables auth
+    api_key: str = ""
+    cors_allowed_origins: str = ""
     max_upload_size_mb: int = 20
     rate_limit_per_minute: int = 20
 
