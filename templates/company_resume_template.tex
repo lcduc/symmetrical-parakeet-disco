@@ -1,0 +1,175 @@
+%-------------------------
+% Resume in Latex
+% Adapted from: Harshibar's resume template (https://github.com/jakeryang/resume), MIT License
+% Adapted for: HR CV Matcher's CandidateProfile data model
+%
+% This is a one-time manual asset, not meant to be generated
+% programmatically. It is a Jinja2 template using custom LaTeX-safe
+% delimiters (see services/template_service.py for the variable and
+% block-tag markers) and is compiled to PDF with tectonic.
+%
+% Sections not backed by a CandidateProfile field in models/candidate.py
+% (projects, social links, location, citizenship) were removed rather
+% than filled with placeholder data.
+%------------------------
+
+\documentclass[letterpaper,11pt]{article}
+
+\usepackage{latexsym}
+\usepackage[empty]{fullpage}
+\usepackage{titlesec}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyhdr}
+\usepackage[english]{babel}
+
+% fontawesome
+\usepackage{fontawesome5}
+\usepackage{transparent}
+
+% company watermark (set by TemplateService from Settings.company_name)
+\BLOCK{if company_name}
+\usepackage{draftwatermark}
+\SetWatermarkText{\VAR{company_name|latex}}
+\SetWatermarkScale{0.6}
+\SetWatermarkColor[gray]{0.90}
+\SetWatermarkAngle{50}
+\BLOCK{endif}
+
+% light-grey
+\definecolor{light-grey}{gray}{0.83}
+\definecolor{dark-grey}{gray}{0.3}
+\definecolor{text-grey}{gray}{.08}
+
+% custom font: helvetica-style
+\usepackage{tgheros}
+\renewcommand*\familydefault{\sfdefault}
+%% Only if the base font of the document is to be sans serif
+\usepackage[T1]{fontenc}
+
+\pagestyle{fancy}
+\fancyhf{} % clear all header and footer fields
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% Adjust margins
+\addtolength{\oddsidemargin}{-0.5in}
+\addtolength{\evensidemargin}{0in}
+\addtolength{\textwidth}{1in}
+\addtolength{\topmargin}{-.5in}
+\addtolength{\textheight}{1.0in}
+
+\urlstyle{same}
+
+\raggedbottom
+\raggedright
+\setlength{\tabcolsep}{0in}
+
+% sans serif sections
+\titleformat{\section}{
+    \bfseries \vspace{2pt} \raggedright \large % header section
+}{}{0em}{}[\color{light-grey} {\titlerule[2pt]} \vspace{-4pt}]
+
+%-------------------------
+% Custom commands
+\newcommand{\resumeItem}[1]{
+  \item\small{
+    {#1 \vspace{-1pt}}
+  }
+}
+
+\newcommand{\resumeSubheading}[4]{
+  \vspace{-1pt}\item
+    \begin{tabular*}{\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \textbf{#1} & {\color{dark-grey}\small #2}\vspace{1pt}\\ % top row of resume entry
+      \textit{#3} & {\color{dark-grey} \small #4}\\ % second row of resume entry
+    \end{tabular*}\vspace{-4pt}
+}
+
+\newcommand{\resumeSubItem}[1]{\resumeItem{#1}\vspace{-4pt}}
+
+\renewcommand\labelitemii{$\vcenter{\hbox{\tiny$\bullet$}}$}
+
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=0in, label={}]}
+\newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
+\newcommand{\resumeItemListStart}{\begin{itemize}}
+\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{0pt}}
+
+\color{text-grey}
+
+%-------------------------------------------
+%%%%%%  RESUME STARTS HERE  %%%%%%
+
+\begin{document}
+
+%----------HEADING----------
+\begin{center}
+    \textbf{\Huge \VAR{full_name|latex}} \\ \vspace{5pt}
+    \small
+    \BLOCK{if phone}\faPhone* \texttt{\VAR{phone|latex}} \hspace{1pt} $|$ \hspace{1pt}\BLOCK{endif}
+    \faEnvelope \hspace{2pt} \texttt{\VAR{email|latex}}
+    \\ \vspace{-3pt}
+\end{center}
+
+%-----------EXPERIENCE-----------
+\BLOCK{if work_history}
+\section{EXPERIENCE}
+  \resumeSubHeadingListStart
+    \BLOCK{for job in work_history}
+    \resumeSubheading
+      {\VAR{job.company|latex}}{\VAR{job.start_date|latex} -- \VAR{job.end_date|latex if job.end_date else "Present"}}
+      {\VAR{job.title|latex}}{}
+      \BLOCK{if job.description}
+      \resumeItemListStart
+        \BLOCK{for bullet in job.description}
+        \resumeItem{\VAR{bullet|latex}}
+        \BLOCK{endfor}
+      \resumeItemListEnd
+      \BLOCK{endif}
+    \BLOCK{endfor}
+  \resumeSubHeadingListEnd
+\BLOCK{endif}
+
+%-----------EDUCATION-----------
+\BLOCK{if education}
+\section{EDUCATION}
+  \resumeSubHeadingListStart
+    \BLOCK{for entry in education}
+    \resumeSubheading
+      {\VAR{entry.institution|latex}}{\BLOCK{if entry.start_date}\VAR{entry.start_date|latex} -- \VAR{entry.end_date|latex if entry.end_date else "Present"}\BLOCK{else}\VAR{entry.end_date|latex if entry.end_date else ""}\BLOCK{endif}}
+      {\VAR{entry.degree|latex}\BLOCK{if entry.field_of_study} in \VAR{entry.field_of_study|latex}\BLOCK{endif}}{\VAR{entry.level|latex}}
+      \BLOCK{if entry.description}
+      \resumeItemListStart
+        \BLOCK{for bullet in entry.description}
+        \resumeItem{\VAR{bullet|latex}}
+        \BLOCK{endfor}
+      \resumeItemListEnd
+      \BLOCK{endif}
+    \BLOCK{endfor}
+  \resumeSubHeadingListEnd
+\BLOCK{endif}
+
+%-----------SKILLS-----------
+\BLOCK{if skills}
+\section{SKILLS}
+ \begin{itemize}[leftmargin=0in, label={}]
+    \small{\item{
+     \VAR{skills|map('latex')|join(', ')}
+    }}
+ \end{itemize}
+\BLOCK{endif}
+
+%-----------CERTIFICATIONS-----------
+\BLOCK{if certifications}
+\section{CERTIFICATIONS}
+ \begin{itemize}[leftmargin=0in, label={}]
+    \small{\item{
+     \VAR{certifications|map('latex')|join(', ')}
+    }}
+ \end{itemize}
+\BLOCK{endif}
+
+%-------------------------------------------
+\end{document}
